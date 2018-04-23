@@ -56,13 +56,13 @@ def client
   require 'influxdb'
   @client ||=
     InfluxDB::Client.new(
-      username: new_resource.auth_username,
-      password: new_resource.auth_password,
-      retry: new_resource.retry_limit,
-      host: new_resource.api_hostname,
-      port: new_resource.api_port,
-      use_ssl: new_resource.use_ssl,
-      verify_ssl: new_resource.verify_ssl
+      username: auth_username,
+      password: auth_password,
+      retry: retry_limit,
+      host: api_hostname,
+      port: api_port,
+      use_ssl: use_ssl,
+      verify_ssl: verify_ssl
     )
 end
 # rubocop:enable Metrics/MethodLength
