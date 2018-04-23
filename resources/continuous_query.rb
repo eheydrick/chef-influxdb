@@ -20,11 +20,11 @@ default_action :create
 action :create do
   if current_cq
     if new_resource.rewrite
-      client.delete_continuous_query(name, database)
-      client.create_continuous_query(name, database, query, resample_every: resample_every, resample_for: resample_for)
+      client.delete_continuous_query(new_resource.name, new_resource.database)
+      client.create_continuous_query(new_resource.name, new_resource.database, new_resource.query, resample_every: new_resource.resample_every, resample_for: new_resource.resample_for)
       updated_by_last_action true
     else
-      Chef::Log.info("The continuous query #{name} on #{database} already exists. Skip this step.")
+      Chef::Log.info("The continuous query #{new_resource.name} on #{new_resource.database} already exists. Skip this step.")
     end
   else
     client.create_continuous_query(new_resource.name, new_resource.database, new_resource.query, resample_every: new_resource.resample_every, resample_for: new_resource.resample_for)
@@ -40,11 +40,11 @@ end
 # rubocop:disable Metrics/AbcSize
 def current_cq
   @current_cq ||= begin
-    current_cq_arr = client.list_continuous_queries(database).select do |c|
-      c['name'] == name
+    current_cq_arr = client.list_continuous_queries(new_resource.database).select do |c|
+      c['name'] == new_resource.name
     end
     if current_cq_arr.length > 1
-      Chef::Log.fatal("Unexpected number of matches for continuous query #{name} on database #{database}: #{current_policy_arr}")
+      Chef::Log.fatal("Unexpected number of matches for continuous query #{new_resource.name} on database #{new_resource.database}: #{current_policy_arr}")
     end
     current_cq_arr[0] if current_cq_arr.length
   end
@@ -56,13 +56,13 @@ def client
   require 'influxdb'
   @client ||=
     InfluxDB::Client.new(
-      username: auth_username,
-      password: auth_password,
-      retry: retry_limit,
-      host: api_hostname,
-      port: api_port,
-      use_ssl: use_ssl,
-      verify_ssl: verify_ssl
+      username: new_resource.auth_username,
+      password: new_resource.auth_password,
+      retry: new_resource.retry_limit,
+      host: new_resource.api_hostname,
+      port: new_resource.api_port,
+      use_ssl: new_resource.use_ssl,
+      verify_ssl: new_resource.verify_ssl
     )
 end
 # rubocop:enable Metrics/MethodLength
