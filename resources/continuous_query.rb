@@ -41,7 +41,7 @@ end
 def current_cq
   @current_cq ||= begin
     current_cq_arr = client.list_continuous_queries(database).select do |c|
-      c['name'] == new_resource.name
+      c['name'] == name
     end
     if current_cq_arr.length > 1
       Chef::Log.fatal("Unexpected number of matches for continuous query #{name} on database #{database}: #{current_policy_arr}")
